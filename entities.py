@@ -44,7 +44,7 @@ class Phone(Field):
             r"(\+?([0-9]{3})?\s?[0-9]{2}\s?[0-9]{3}\s?[0-9]{4,5}$)", phone)
         if not check_phone:
             raise ValueError(
-                "Incorrect phone number format")
+                "Incorrect phone number format (+380xxxxxxxxx")
         self.__value = phone
 
     def __repr__(self):
@@ -61,9 +61,14 @@ class Birthday(Field):
 
     @value.setter
     def value(self, bday):
-        if bday:
+        try:
             datetime_obj = datetime.strptime(bday, "%d-%m-%Y")
+        except ValueError:
+            print("Incorrect birthday format (dd-mm-yyyy)")
+        else:
             self.__value = datetime_obj.date()
+        # if bday:
+        #     datetime_obj = datetime.strptime(bday, "%d-%m-%Y")
 
     def __repr__(self):
         return f"{self.value}"
@@ -78,13 +83,14 @@ class Record():
         self.bday = bday
 
     def days_to_birthday(self):
-        today = date.today()
-        next_bday = self.bday.value.replace(year=today.year)
-        if next_bday < today:
-            next_bday = next_bday.replace(year=today.year + 1)
+        if self.bday.value != None:
+            today = date.today()
+            next_bday = self.bday.value.replace(year=today.year)
+            if next_bday < today:
+                next_bday = next_bday.replace(year=today.year + 1)
 
-        days_to_bday = (next_bday - today).days
-        return days_to_bday
+            days_to_bday = (next_bday - today).days
+            return days_to_bday
 
     def add(rec):
         return {rec.name.value: rec}
@@ -102,7 +108,7 @@ if __name__ == '__main__':
     phone = Phone()
     phone.value = "0977777777"
     bday = Birthday()
-    bday.value = '23-01-2009'
+    bday.value = '23-01-20091'
     rec = Record(name, phone, bday)
     rec.days_to_birthday()
     ab = AddressBook()
