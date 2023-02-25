@@ -40,11 +40,19 @@ class Phone(Field):
 
     @value.setter
     def value(self, phone):
+        phone = re.sub('\W+', '', phone)
         check_phone = re.match(
-            r"(\+?([0-9]{3})?\s?[0-9]{2}\s?[0-9]{3}\s?[0-9]{4,5}$)", phone)
+            r"([0-9]{3}[0-9]{3}[0-9]{2}[0-9]{2}$)", phone)
+
         if not check_phone:
             raise ValueError(
                 "Incorrect phone number format (+380xxxxxxxxx")
+
+        if phone.startswith("0"):
+            phone = "+38" + phone
+        elif phone.startswith("380"):
+            phone = "+" + phone
+
         self.__value = phone
 
     def __repr__(self):
@@ -106,7 +114,7 @@ class Record():
 if __name__ == '__main__':
     name = Name('Bill')
     phone = Phone()
-    phone.value = "0977777777"
+    phone.value = "097-7777777 "
     bday = Birthday()
     bday.value = '23-01-20091'
     rec = Record(name, phone, bday)
